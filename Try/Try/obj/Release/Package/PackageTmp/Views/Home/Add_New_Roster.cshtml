@@ -1,0 +1,312 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+<div class="container">
+    <h3>@ViewBag.Message</h3>
+
+    <div class="row">
+        <div class="box col-md-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Sunday</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+    
+                        </tr>
+                    </thead>
+                    <tbody id="body">
+                           
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" onclick="saveDataToDb()">Save All</button>
+            </div>     
+        </div>
+    </div>
+</div>
+
+<script>
+
+    
+    $(document).ready(function () {
+        getEmployee();
+    });
+    //Api calls
+    function getEmployee() {
+        $.ajax({
+            type: "GET",
+            url: "/home/getEmployee",
+            success: function (data) {
+                
+                data.forEach(function (element) {
+                    //console.log(element);
+                    populateData(element);
+                });
+                //console.log(data);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                // TODO: Show error
+                alert("Something went wrong!");
+
+            }
+           
+        });
+    }
+    function saveDataToDb() {
+        $.ajax({
+            url: "/home/saveRoster",
+            cache: false,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(EmployeeData),
+            success: function (data) {
+                alert("Save data successfully.")
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                // TODO: Show error
+                alert("Something went wrong!");
+
+            }
+
+        });
+    }
+
+    ////
+
+    var EmployeeData = [];
+
+    function getOldDataIndex(id) {
+        var index = -1;
+        for (var i = 0; i < EmployeeData.length; i++) {
+            if (EmployeeData[i].id == id) {
+                index = i;
+                return index;
+            }
+        }
+        return index;
+
+    }
+
+    function dateChangeDetect(r) {
+        var index = getOldDataIndex(r);
+        var date = document.getElementById("date" + r).value;
+        if (index == -1) {
+            var employeeTemp = {
+                id: r,
+                date: date
+            }
+            EmployeeData.push(employeeTemp);
+        }
+        else {
+            EmployeeData[index].date = date;
+        }
+       // console.log(EmployeeData);
+    }
+    function dayChangeDetect(id, day) {
+        var index = getOldDataIndex(id);
+
+
+        switch(day) {
+            case 1:
+                //sunday
+                var daySelect = document.getElementById("sunday" + id).value;
+
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        sunday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].sunday = daySelect;
+                }
+                break;
+            case 2:
+                //monday
+                var daySelect = document.getElementById("monday" + id).value;
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        monday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].monday = daySelect;
+                }
+                break;
+            case 3:
+                //tuesday
+                var daySelect = document.getElementById("tuesday" + id).value;
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        tuesday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].tuesday = daySelect;
+                }
+                break;
+            case 4:
+                //wednesday
+                var daySelect = document.getElementById("wednesday" + id).value;
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        wednesday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].wednesday = daySelect;
+                }
+                break;
+            case 5:
+                //thursday
+                var daySelect = document.getElementById("thursday" + id).value;
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        thursday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].thursday = daySelect;
+                }
+                break;
+            case 6:
+                //friday
+                var daySelect = document.getElementById("friday" + id).value;
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        friday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].friday = daySelect;
+                }
+                break;
+            case 7:
+                //saturday
+                var daySelect = document.getElementById("saturday" + id).value;
+                if (index == -1) {
+                    var dayTemp = {
+                        id: id,
+                        saturday: daySelect
+                    }
+                    EmployeeData.push(dayTemp);
+                }
+                else {
+                    EmployeeData[index].saturday = daySelect;
+                }
+                break;
+            default:
+                alert("Somthing went wrong!");
+                break;
+        }
+    }
+    
+    function populateData(Employee)
+    {
+
+                             var temp =
+                               `<tr>`+
+                                '<td>'+Employee.Name+'</td>'+
+                                `<td>`+
+                                    '<input type="hidden" class="form-control" id="id'+Employee.ID+'"  value=""  />'+
+                                    '<input type="text" class="datepicker form-control" onchange="dateChangeDetect('+Employee.ID+')" id="date' + Employee.ID + '" />' + `
+                                </td>
+                                <td>`
+                                + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',1)" class="form-control" id="sunday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                                <td>`
+                                 + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',2)" class="form-control" id="monday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                                <td>`
+                                + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',3)" class="form-control" id="tuesday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                                <td>`
+                                 + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',4)" class="form-control" id="wednesday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                                <td>`
+                                 + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',5)" class="form-control" id="thursday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                                <td>`
+                                 + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',6)" class="form-control" id="friday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                                <td>`
+                                 + '<select data-ng-model="selectedshift" onchange="dayChangeDetect(' + Employee.ID + ',7)" class="form-control" id="saturday' + Employee.ID + '">' + `
+                                        <option value="0">Select Shift</option>
+                                        <option value="MOR">MOR</option>
+                                        <option value="EVE">EVE</option>
+                                        <option value="NIG">NIG</option>
+                                        <option value="OFF">OFF</option>
+                                    </select>
+                                </td>
+                          
+                                
+                            </tr>`;
+                             document.getElementById('body').insertAdjacentHTML('beforeend', temp);
+
+                            $('.datepicker').datepicker({
+                                dateFormat: 'dd/mm/yy'
+                            });
+                        
+    }
+
+</script>
+
